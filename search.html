@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="search.ts"></script>
+    <script type="application/javascript" src="multilanguage/js/jquery.i18n.js"></script>
+    <script type="application/javascript" src="multilanguage/js/jquery.i18n.mesagestore.js"></script>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css"/>
+
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12 mt-5">
+            <form class="mt-3">
+                <table class="table-danger">
+                    <tr>
+                        <td>Name</td>
+                        <td><input type="text" id="name"></td>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td><select name="" id="status">
+                            <option value="ALL">Tất cả</option>
+                            <option value="ACTIVE">Đang kích hoạt</option>
+                            <option value="INACTIVE">Chưa kích hoạt</option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button type="button" id="btn-search" class="mt-3">Search</button>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <h1 id="mess" class="alert-warning"></h1>
+            <table class="mt-5 table">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Date Of Birth</th>
+                    <th>Salary</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    $.i18n({
+        locale: document.documentElement.lang,
+    }).load({
+        'en': '../jsons/language_en.json',
+        'vn': '../jsons/language_vi.json'
+    })
+        .done(() => {
+            alert("ok");
+        })
+</script>
+<!--<script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>-->
+</html>

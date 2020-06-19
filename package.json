@@ -1,0 +1,29 @@
+{
+  "name": "demowebnodejs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "bootstrap": "^4.5.0",
+    "jquery": "^3.5.1",
+    "parcel": "^1.12.4",
+    "parcel-bundler": "^1.12.4",
+    "tcs": "^10.0.0",
+    "typescript": "^3.9.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/taink3107/clientNodeJS.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/taink3107/clientNodeJS/issues"
+  },
+  "homepage": "https://github.com/taink3107/clientNodeJS#readme",
+  "keywords": [],
+  "description": ""
+}

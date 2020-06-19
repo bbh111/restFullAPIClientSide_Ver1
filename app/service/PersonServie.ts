@@ -6,4 +6,10 @@ export class PersonServie {
     getAll():Person[]{
         return this.pr.findAll();
     }
+    getByID(id:number){
+        return this.pr.findOne(id);
+    }
+    insertNewPerson(person:Person){
+        return this.pr.insertNewPerson(person);
+    }
 }

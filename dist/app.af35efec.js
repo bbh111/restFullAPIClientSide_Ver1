@@ -11203,7 +11203,31 @@ if ( typeof noGlobal === "undefined" ) {
 return jQuery;
 } );
 
-},{"process":"node_modules/process/browser.js"}],"app/util/Constants.ts":[function(require,module,exports) {
+},{"process":"node_modules/process/browser.js"}],"app/domain/Person.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Person = void 0;
+
+var Person =
+/** @class */
+function () {
+  function Person(firstName, lastName, age, salary, dob, status) {
+    this.firstName = firstName;
+    this.age = age;
+    this.salary = salary;
+    this.lastName = lastName;
+    this.dob = dob;
+    this.status = status;
+  }
+
+  return Person;
+}();
+
+exports.Person = Person;
+},{}],"app/util/Constants.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11214,11 +11238,80 @@ var BASE_URL = "http://localhost:8888/api_v1";
 exports.ENDPOINT = {
   person: {
     list: BASE_URL + "/person",
-    personID: BASE_URL + "/person/{id}"
+    personID: BASE_URL + "/person"
   },
-  account: BASE_URL + "/account"
+  account: {
+    create: BASE_URL + "/account/create"
+  },
+  search: {
+    name: BASE_URL + "/search/byName"
+  }
 };
-},{}],"app/repo/PersonRespository.ts":[function(require,module,exports) {
+},{}],"search.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Search = void 0;
+
+var $ = require("jquery");
+
+var Person_1 = require("./app/domain/Person");
+
+var PersonRespository_1 = require("./app/repo/PersonRespository");
+
+$(document).ready(function () {
+  $("#btn-search").on("click", function () {
+    var person = new Person_1.Person(null, null, null, null, null, null);
+    person.firstName = $("#name").val().toString();
+    person.lastName = $("#name").val().toString();
+    person.status = $("#status").val().toString();
+    new PersonRespository_1.PersonRespository().searchPersonByNameAndStatus(person);
+  });
+});
+
+var Search =
+/** @class */
+function () {
+  function Search() {}
+
+  Search.prototype.dataBinder = function (listPerson) {
+    var content;
+    var count = 1;
+    var dateFormatter = new Intl.DateTimeFormat("vi-vn", {});
+    var currencyFormatter = new Intl.NumberFormat("vi-vn", {
+      style: "currency",
+      currency: "VND"
+    });
+
+    if (listPerson.length == 0) {
+      $("#mess").html("Không tìm thấy kết quả");
+      $("#tbody").html("");
+    } else {
+      $("#mess").html("");
+      $("#tbody").html(function () {
+        listPerson.forEach(function (value) {
+          var tmp;
+
+          if (value.status == "ACTIVE") {
+            tmp += "<td style=\"color: #1c7430\">\u0110ang k\xEDch ho\u1EA1t</td>";
+          } else {
+            tmp += "<td style=\"color: red\">Ch\u01B0a k\xEDch ho\u1EA1t</td>";
+          }
+
+          content += "<tr><td>" + count++ + "</td><td>" + value.firstName + value.lastName + "</td><td>" + value.age + "</td><td>" + value.dob + "</td><td>" + currencyFormatter.format(value.salary) + "</td>" + tmp + "</tr>";
+        });
+        return content;
+      });
+    }
+  };
+
+  return Search;
+}();
+
+exports.Search = Search;
+},{"jquery":"node_modules/jquery/dist/jquery.js","./app/domain/Person":"app/domain/Person.ts","./app/repo/PersonRespository":"app/repo/PersonRespository.ts"}],"app/repo/PersonRespository.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11226,9 +11319,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.PersonRespository = void 0;
 
+var Person_1 = require("../domain/Person");
+
 var Constants_1 = require("../util/Constants");
 
 var $ = require("jquery");
+
+var search_1 = require("../../search");
 
 var PersonRespository =
 /** @class */
@@ -11253,14 +11350,62 @@ function () {
   };
 
   PersonRespository.prototype.findOne = function (k) {
-    return undefined;
+    var person = new Person_1.Person(null, null, null, null, null, null);
+    $.ajax({
+      url: Constants_1.ENDPOINT.person.personID + ("/" + k),
+      method: 'GET',
+      contentType: 'application/json',
+      async: false,
+      success: function success(data) {
+        $.extend(person, data);
+      },
+      error: function error(msg) {
+        console.log(msg);
+      }
+    });
+    return person;
+  };
+
+  PersonRespository.prototype.insertNewPerson = function (person) {
+    $.ajax({
+      url: Constants_1.ENDPOINT.account.create,
+      method: 'POST',
+      contentType: 'application/json',
+      async: false,
+      data: JSON.stringify(person),
+      success: function success(response) {
+        console.log(response);
+        alert("ok");
+      },
+      error: function error(msg) {
+        console.log(msg);
+        alert("loi");
+      }
+    });
+  };
+
+  PersonRespository.prototype.searchPersonByNameAndStatus = function (person) {
+    var persons = [];
+    $.ajax({
+      url: Constants_1.ENDPOINT.search.name,
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(person),
+      success: function success(respone) {
+        $.extend(persons, respone);
+        new search_1.Search().dataBinder(persons);
+      },
+      error: function error(msg) {
+        alert("loi");
+      }
+    });
   };
 
   return PersonRespository;
 }();
 
 exports.PersonRespository = PersonRespository;
-},{"../util/Constants":"app/util/Constants.ts","jquery":"node_modules/jquery/dist/jquery.js"}],"app/service/PersonServie.ts":[function(require,module,exports) {
+},{"../domain/Person":"app/domain/Person.ts","../util/Constants":"app/util/Constants.ts","jquery":"node_modules/jquery/dist/jquery.js","../../search":"search.ts"}],"app/service/PersonServie.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -11281,6 +11426,14 @@ function () {
     return this.pr.findAll();
   };
 
+  PersonServie.prototype.getByID = function (id) {
+    return this.pr.findOne(id);
+  };
+
+  PersonServie.prototype.insertNewPerson = function (person) {
+    return this.pr.insertNewPerson(person);
+  };
+
   return PersonServie;
 }();
 
@@ -11294,15 +11447,59 @@ Object.defineProperty(exports, "__esModule", {
 
 var $ = require("jquery");
 
+var Person_1 = require("./domain/Person");
+
 var PersonServie_1 = require("./service/PersonServie");
 
 $(document).ready(function () {
-  // let p:Person = new Person("Hieu",23,1000);
-  // console.log(p);
   var persons = new PersonServie_1.PersonServie().getAll();
+  bindData(persons, "persons");
   console.log(persons);
+  var id = $(location).attr("href").split("/")[5];
+  var person = new PersonServie_1.PersonServie().getByID(Number(id));
+  var persons1 = [];
+  persons1.push(person);
+  bindData(persons1, "person");
+  console.log(person);
 });
-},{"jquery":"node_modules/jquery/dist/jquery.js","./service/PersonServie":"app/service/PersonServie.ts"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+
+function bindData(persons, id) {
+  var ulElse = $("#" + id);
+
+  if (persons.length == 0) {
+    ulElse.html(" <li>Không có person nào</li>");
+  } else {
+    var content_1 = "";
+    persons.forEach(function (value) {
+      content_1 += "<li>" + value.firstName + " - " + value.lastName + " - " + value.age + " - " + value.salary + " - " + value.dob + "</li>";
+    });
+    ulElse.html(content_1);
+  }
+} // function convertDate(raw:string){
+//     let arr:string[] = raw.split("-");
+//     let tmp: string = "";
+//     tmp =arr[0];
+//     arr[0] = arr[2];
+//     arr[2] = tmp;
+//     return arr[0].concat("-").concat(arr[1]).concat("-").concat(arr[2]);
+// }
+
+
+$(document).ready(function () {
+  $("#btn-save").on("click", function () {
+    var firstname = $("#firstname").val().toString();
+    var lastname = $("#lastname").val().toString();
+    var age = Number($("#age").val());
+    var salary = Number($("#salary").val()); // let dob = dateFormatter.format(Date.parse($("#dob").val().toString()));
+
+    var dob = $("#dob").val().toString();
+    console.log(dob);
+    var status = $("#status").val().toString();
+    var person = new Person_1.Person(firstname, lastname, age, salary, dob, status);
+    new PersonServie_1.PersonServie().insertNewPerson(person);
+  });
+});
+},{"jquery":"node_modules/jquery/dist/jquery.js","./domain/Person":"app/domain/Person.ts","./service/PersonServie":"app/service/PersonServie.ts"}],"node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -11330,7 +11527,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "45877" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "44619" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

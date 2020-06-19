@@ -1,0 +1,9 @@
+{
+  "en": {
+    "name": "Name",
+    "age": "Age",
+    "dob": "Date Of Birth",
+    "salary": "Salary",
+    "status": "Status"
+  }
+}

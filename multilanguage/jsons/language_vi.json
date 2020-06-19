@@ -1,0 +1,9 @@
+{
+  "vi": {
+    "name": "Họ và Tên",
+    "age": "Tuổi",
+    "dob": "Ngày Sinh",
+    "salary": "Mức Lương",
+    "status": "Trạng Thái"
+  }
+}
