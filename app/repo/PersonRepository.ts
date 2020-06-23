@@ -24,7 +24,7 @@ export class PersonRespository implements ICrudReponsitory<Person, number> {
     }
 
     findOne(k: number): Person {
-        let person: Person = new Person(null, null, null, null, null, null);
+        let person: Person = new Person(null, null, null, null, null, null, null, null);
         $.ajax({
             url: ENDPOINT.person.personID + `/${k}`,
             method: 'GET',
@@ -58,7 +58,7 @@ export class PersonRespository implements ICrudReponsitory<Person, number> {
         })
     }
 
-    searchPersonByNameAndStatus(person:Person) {
+    searchPersonByNameAndStatus(person: Person) {
         let persons: Person[] = [];
         $.ajax({
             url: ENDPOINT.search.name,
@@ -66,8 +66,28 @@ export class PersonRespository implements ICrudReponsitory<Person, number> {
             contentType: 'application/json',
             data: JSON.stringify(person),
             success: (respone: Person[]) => {
-               $.extend(persons,respone);
+                $.extend(persons, respone);
                 new Search().dataBinder(persons);
+            },
+            error: (msg) => {
+                alert("loi");
+            }
+        });
+    }
+
+    editPerson(person: Person) {
+        $.ajax({
+            url: ENDPOINT.edit,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(person),
+            success: (data: Person) => {
+                if (data.toString()=="") {
+                    alert(`Không thể sửa status vì người này đang có Task`);
+                } else {
+                    alert(`Edit success person ${data.id}`);
+                    new Search().modalEditDataBinder(data);
+                }
             },
             error: (msg) => {
                 alert("loi");
